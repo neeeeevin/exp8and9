@@ -1,6 +1,10 @@
 {
+  "version": 2,
+  "framework": "create-react-app",
   "buildCommand": "chmod +x node_modules/.bin/react-scripts && npm run build",
   "outputDirectory": "build",
   "installCommand": "npm install --legacy-peer-deps",
-  "framework": "create-react-app"
+  "env": {
+    "REACT_APP_API_BASE_URL": "https://gym-backend-qzk9.onrender.com"
+  }
 }
