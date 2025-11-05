@@ -1,65 +1,105 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import WorkoutForm from "./WorkoutForm";
 import { useNavigate } from "react-router-dom";
 import "./Dashboard.css";
+
+// ✅ Move motivational quotes OUTSIDE the component to prevent ESLint warnings
+const motivationalQuotes = [
+  "Push harder than yesterday if you want a different tomorrow!",
+  "No pain, no gain!",
+  "Strive for progress, not perfection!",
+  "Sweat is fat crying!",
+  "The body achieves what the mind believes!",
+];
 
 function Dashboard() {
   const navigate = useNavigate();
   const [workouts, setWorkouts] = useState([]);
   const [editing, setEditing] = useState(null);
   const [editForm, setEditForm] = useState({});
-  const userToken = localStorage.getItem("token");
   const [userId, setUserId] = useState(null);
   const [quote, setQuote] = useState("");
+  const userToken = localStorage.getItem("token");
 
+  // ✅ Redirect if no token
   useEffect(() => {
-    if (!userToken) navigate("/login");
-    else {
+    if (!userToken) {
+      navigate("/login");
+      return;
+    }
+    try {
       const base64Url = userToken.split(".")[1];
       const decoded = JSON.parse(atob(base64Url));
       setUserId(decoded.id);
+    } catch (err) {
+      console.error("Invalid token:", err);
+      localStorage.removeItem("token");
+      navigate("/login");
     }
   }, [userToken, navigate]);
 
-  const quotes = [
-    "Push harder than yesterday if you want a different tomorrow!",
-    "No pain, no gain!",
-    "Strive for progress, not perfection!",
-    "Sweat is fat crying!",
-    "The body achieves what the mind believes!"
-  ];
+  // ✅ Use environment variable for backend URL
+  const API_BASE =
+    process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
 
-  const fetchWorkouts = async () => {
-    const res = await axios.get("http://localhost:5000/api/workouts", { params: { userId } });
-    setWorkouts(res.data);
-    setQuote(quotes[Math.floor(Math.random() * quotes.length)]);
-  };
+  // ✅ Fetch workouts with useCallback (warning-free now)
+  const fetchWorkouts = useCallback(async () => {
+    try {
+      const res = await axios.get(`${API_BASE}/api/workouts`, {
+        params: { userId },
+      });
+      setWorkouts(res.data);
+      setQuote(
+        motivationalQuotes[
+          Math.floor(Math.random() * motivationalQuotes.length)
+        ]
+      );
+    } catch (err) {
+      console.error("Error fetching workouts:", err.message);
+    }
+  }, [API_BASE, userId]);
 
-  useEffect(() => { if (userId) fetchWorkouts(); }, [userId]);
+  // ✅ Run once when userId is set
+  useEffect(() => {
+    if (userId) fetchWorkouts();
+  }, [userId, fetchWorkouts]);
 
+  // ✅ Delete a workout
   const handleDelete = async (id) => {
     if (window.confirm("Delete this workout?")) {
-      await axios.delete(`http://localhost:5000/api/workouts/${id}`);
-      fetchWorkouts();
+      try {
+        await axios.delete(`${API_BASE}/api/workouts/${id}`);
+        fetchWorkouts();
+      } catch (err) {
+        console.error("Error deleting workout:", err.message);
+      }
     }
   };
 
+  // ✅ Edit workout
   const handleEdit = (workout) => {
     setEditing(workout._id);
     setEditForm({ ...workout });
   };
 
+  // ✅ Save edited workout
   const handleEditSubmit = async (e) => {
     e.preventDefault();
-    await axios.put(`http://localhost:5000/api/workouts/${editing}`, editForm);
-    setEditing(null);
-    fetchWorkouts();
+    try {
+      await axios.put(`${API_BASE}/api/workouts/${editing}`, editForm);
+      setEditing(null);
+      fetchWorkouts();
+    } catch (err) {
+      console.error("Error updating workout:", err.message);
+    }
   };
 
+  // ✅ Weekly summary
   const totalWorkouts = workouts.length;
-  const totalMinutes = workouts.reduce((sum, w) => sum + w.duration, 0);
+  const totalMinutes = workouts.reduce((sum, w) => sum + (w.duration || 0), 0);
 
+  // ✅ Logout
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/login");
@@ -67,18 +107,22 @@ function Dashboard() {
 
   return (
     <div className="dashboard-container">
-      <div className="dashboard-header mb-3">
-        <h3>🏋️ Gym Dashboard</h3>
+      {/* Header */}
+      <div className="dashboard-header mb-3 d-flex justify-content-between align-items-center">
+        <h3 className="m-0">🏋️ Gym Dashboard</h3>
         <button className="btn btn-danger btn-sm" onClick={handleLogout}>
           Logout
         </button>
       </div>
 
-      <div className="quote-box">“{quote}”</div>
+      {/* Quote Section */}
+      <div className="quote-box text-center">“{quote}”</div>
 
+      {/* Add Workout */}
       <WorkoutForm userId={userId} onWorkoutAdded={fetchWorkouts} />
 
-      <div className="summary-box text-center">
+      {/* Summary */}
+      <div className="summary-box text-center mt-3 mb-3">
         Weekly Summary: <strong>{totalWorkouts}</strong> Workouts |{" "}
         <strong>{totalMinutes}</strong> Minutes
       </div>
@@ -86,7 +130,9 @@ function Dashboard() {
       <h5 className="text-primary mb-3">Your Workouts</h5>
 
       {workouts.length === 0 ? (
-        <p className="text-muted">No workouts yet. Add one above!</p>
+        <p className="text-muted text-center">
+          No workouts yet. Add one above!
+        </p>
       ) : (
         <ul className="workout-list">
           {workouts.map((w) => (
@@ -116,7 +162,9 @@ function Dashboard() {
                     }
                   ></textarea>
                   <div className="text-end">
-                    <button className="btn btn-success btn-sm me-2">Save</button>
+                    <button className="btn btn-success btn-sm me-2">
+                      Save
+                    </button>
                     <button
                       type="button"
                       className="btn btn-secondary btn-sm"
@@ -130,7 +178,7 @@ function Dashboard() {
                 <>
                   <div className="workout-info">
                     <strong>{w.workoutName}</strong> ({w.duration} mins)
-                    <span className={`badge badge-${w.type}`}>{w.type}</span>
+                    <span className="badge bg-info ms-2">{w.type}</span>
                     <div className="workout-date">
                       {new Date(w.date).toLocaleDateString()}
                     </div>
@@ -138,13 +186,13 @@ function Dashboard() {
                   </div>
                   <div>
                     <button
-                      className="btn-edit me-2"
+                      className="btn btn-outline-primary btn-sm me-2"
                       onClick={() => handleEdit(w)}
                     >
                       ✏️
                     </button>
                     <button
-                      className="btn-delete"
+                      className="btn btn-outline-danger btn-sm"
                       onClick={() => handleDelete(w._id)}
                     >
                       🗑
