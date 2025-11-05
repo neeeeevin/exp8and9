@@ -1,0 +1,157 @@
+/* 🌟 GYM DASHBOARD MODERN THEME */
+
+.dashboard-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 30px;
+  background: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  color: #222;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dashboard-header h3 {
+  color: #007bff;
+  font-weight: 700;
+}
+
+.quote-box {
+  background: linear-gradient(135deg, #007bff, #00c2ff);
+  color: white;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-style: italic;
+  text-align: center;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* 🧾 Workout Form */
+.workout-form {
+  background: #f8f9fa;
+  border: 1px solid #e3e3e3;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 25px;
+}
+
+.workout-form input,
+.workout-form select,
+.workout-form textarea {
+  border-radius: 8px;
+  border: 1px solid #ced4da;
+  padding: 10px;
+  margin-bottom: 12px;
+}
+
+.workout-form button {
+  border-radius: 8px;
+  background: #28a745;
+  border: none;
+  font-weight: 600;
+}
+
+.workout-form button:hover {
+  background: #218838;
+}
+
+/* 📋 Workout List */
+.workout-list {
+  list-style: none;
+  padding: 0;
+}
+
+.workout-item {
+  background: #fdfdfd;
+  border: 1px solid #dfe6ee;
+  border-radius: 10px;
+  padding: 15px 20px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease-in-out;
+}
+
+.workout-item:hover {
+  transform: scale(1.01);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.workout-info strong {
+  color: #343a40;
+}
+
+.workout-date {
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.badge {
+  font-size: 0.8rem;
+  padding: 5px 10px;
+  border-radius: 8px;
+  margin-left: 8px;
+}
+
+/* 🏷️ Type Colors */
+.badge-Cardio {
+  background-color: #17a2b8;
+}
+.badge-Strength {
+  background-color: #dc3545;
+}
+.badge-Yoga {
+  background-color: #28a745;
+}
+.badge-HIIT {
+  background-color: #ffc107;
+  color: #212529;
+}
+.badge-Stretching {
+  background-color: #6f42c1;
+}
+
+/* ⚙️ Buttons */
+.btn-edit {
+  border: none;
+  background: #ffc107;
+  color: #212529;
+  border-radius: 6px;
+  padding: 6px 10px;
+}
+
+.btn-edit:hover {
+  background: #e0a800;
+}
+
+.btn-delete {
+  border: none;
+  background: #dc3545;
+  color: white;
+  border-radius: 6px;
+  padding: 6px 10px;
+}
+
+.btn-delete:hover {
+  background: #c82333;
+}
+
+.summary-box {
+  background: #f1f9ff;
+  border-left: 5px solid #007bff;
+  padding: 10px 15px;
+  border-radius: 10px;
+  margin-bottom: 25px;
+  font-weight: 500;
+}
+
+.text-muted {
+  color: #6c757d !important;
+}
